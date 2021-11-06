@@ -1,4 +1,5 @@
 #include "GLWifiPoints.hpp"
+#include "cJSON.h"
 using namespace std;
 
 int GLWifiPoints::getWifiNetworks(){
@@ -59,4 +60,46 @@ int GLWifiPoints::getWifiNetworks(){
 
 	//
 	return retVal;
+}
+
+char* GLWifiPoints::buildRequestJSON(){
+	cJSON * pWifiAccessList = NULL;
+	char* outJSON = NULL;
+	
+	cJSON * locationReq = cJSON_CreateObject();
+	if(cJSON_AddStringToObject(locationReq, "considerIp", "true") == NULL){
+		//problem
+		goto end;
+	}
+
+	pWifiAccessList = cJSON_AddArrayToObject(locationReq, "wifiAccessPoints");
+	if(pWifiAccessList == NULL)
+	{
+		//problem
+		goto end;
+	}
+
+	for(m_wifiAP ap : m_wifiAPList){
+		cJSON * accessPt = cJSON_CreateObject();
+		if(cJSON_AddStringToObject(accessPt, "macAddress", ap.macAddress) == NULL){
+			//problem
+			goto end;
+		}
+		if(cJSON_AddNumberToObject(accessPt, "signalStrength", ap.signalStrength) == NULL){
+			//problem
+			goto end;
+		}
+
+		cJSON_AddItemToArray(pWifiAccessList, accessPt);
+		outJSON = cJSON_Print(locationReq);
+		if(outJSON == NULL) 
+		{
+			cerr << "ERROR: Failed to print JSON for the wifi access points" << endl;
+		}
+	}
+
+	end:
+		cJSON_Delete(locationReq);
+
+	return outJSON;
 }

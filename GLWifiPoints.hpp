@@ -7,6 +7,7 @@ using namespace std;
 class GLWifiPoints{
 	public:
 	int getWifiNetworks();
+	char* buildRequestJSON();
 	private:
 	struct m_wifiAP{
 		char macAddress[44];
