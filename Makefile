@@ -1,7 +1,8 @@
 CC		= g++
 TARGET		= main
 SRC		= main.cpp  GLWifiPoints.cpp
+LDLIBS	= -lwlanapi
 
 $(TARGET): $(SRC)
-	$(CC) -o $(TARGET) $(SRC)
+	$(CC) -o $(TARGET) $(SRC) $(LDLIBS)
 
